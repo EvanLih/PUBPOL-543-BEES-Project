@@ -2,5 +2,9 @@
 PUBPOL 543 Colaborative project
 
 ##Group Members:
+Bingyao Zou
+Elsie Liu
 Evan Lih
-Bing
+Sabrina Santos
+
+
