@@ -3,12 +3,18 @@ require(sf)
 require(rgdal)
 require(ggplot2)
 require(readxl)
+library(dplyr)
+library(geojsonio)
 
 #Setting working directory to local folder
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 #Importaing our own Dataset
 finalData <- read_xlsx("Final Data (1).xlsx")
+
+t.test(finalData$`Sustainable Development Index`, finalData$accessElectricity, na.rm = TRUE)
+
+test <- subset(finalData, !is.na(finalData$`Sustainable Development Index` | !is.na(finalData$accessElectricity)))
 
 #Renaming the column "country" to COUNTRY in order to match the shapefile/json we are pulling in. Although it is possible to 
 finalData <- rename(finalData, COUNTRY = Country)
