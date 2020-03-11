@@ -14,8 +14,8 @@ library(ggthemes)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 #Importaing our own Dataset
-github_Link <-"https://github.com/EvanLih/PUBPOL-543-BEES-Project/blob/master/Final_Data.xlsx"
-finalData <- read_xlsx(github_Link)
+github_Link <-"https://raw.githubusercontent.com/EvanLih/PUBPOL-543-BEES-Project/master/Final_Data.csv"
+finalData <- read.csv(github_Link)
 
 t.test(finalData$`Sustainable Development Index`, finalData$accessElectricity, na.rm = TRUE)
 
