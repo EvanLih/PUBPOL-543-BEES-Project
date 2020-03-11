@@ -27,6 +27,8 @@ finalData <- read.csv(github_Link)
 sdiResourceRent <- finalData %>% select(c("Continent", "ResourceRent", "Sustainable.Development.Index", "Country"))
 sdiData = as.data.frame(sdiResourceRent)
 
+##Evan CODE - this line of code "completecases" only keeps rows where there are outputs/non-missing values for specified columns. In this case, we are specifying all columns. 
+sdiResourceRent <- sdiResourceRent[complete.cases(sdiResourceRent), ]
 ggplot(sdiResourceRent, aes(y = ResourceRent, x = Sustainable.Development.Index, color=Continent)) +
   geom_point() +
   # geom_text_repel(aes(label = Country), size = 1) +

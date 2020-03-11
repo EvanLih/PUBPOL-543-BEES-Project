@@ -9,6 +9,10 @@ library(magrittr)
 library(ggrepel)
 library(ggpmisc)
 library(ggthemes)
+require(lavaan)
+require(BBmisc)
+require(RColorBrewer)
+library(tmap)
 
 #Setting working directory to local folder
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
@@ -16,6 +20,30 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 #Importaing our own Dataset
 github_Link <-"https://raw.githubusercontent.com/EvanLih/PUBPOL-543-BEES-Project/master/Final_Data.csv"
 finalData <- read.csv(github_Link)
+
+finalData %<>% select(1:17)
+
+finalData <- finalData[complete.cases(finalData), ]
+
+finalData$Income..GNI.per.capita.constant.2011..PPP. %<>% as.numeric()
+
+modelNUM = '
+demox=~Sustainable.Development.Index + ResourceRent +Forest + Agriculutral + accessElectricity + Arable.Land + RenewConsumption'
+
+fitNUM<-cfa(modelNUM, data = finalData)
+indexCFA=lavPredict(fitNUM)
+indexCFANorm=normalize(indexCFA, 
+                       method = "range", 
+                       margin=2, # by column
+                       range = c(0, 10))
+
+finalData$indexCFA=(indexCFANorm)
+
+plot(finalData$Sustainable.Development.Index, finalData$indexCFA)
+
+
+
+
 
 t.test(finalData$`Sustainable Development Index`, finalData$accessElectricity, na.rm = TRUE)
 
@@ -36,11 +64,11 @@ worldMap=topojson_read(mapLink,crs=PROJmap,stringsAsFactors = FALSE)
 #Now we are merging our own data with the map data by COUNTRY. This will allow us to plot the data. "all.x = F" means that we are choosing NOT to include columns that don't match the "COUNTRY" from our original data 
 mapMerge <- merge(finalData, worldMap, by = "COUNTRY", all.x = F)
 
-sustainElectricity <- finalData %>% select(c("Continent", "accessElectricity", "Sustainable Development Index", "COUNTRY"))
+sustainElectricity <- finalData %>% select(c("Continent", "accessElectricity", "Sustainable.Development.Index", "COUNTRY"))
 
 sustainElectricity$accessElectricity %<>% as.numeric()
 
-sustainElectricity %<>% rename(SDI = "Sustainable Development Index", country = "COUNTRY")
+sustainElectricity %<>% rename(SDI = "Sustainable.Development.Index", country = "COUNTRY")
 
 sustainElectricity %<>% filter(!is.na(accessElectricity))
 
@@ -72,10 +100,30 @@ ggplot(sustainElectricity1, aes(x = meanAccess, y = meanSDI)) +
 #We are replacing the "geometry" of finalData with the "geomtry" from the finalData$geometry column. 
 st_geometry(mapMerge) <- mapMerge$geometry
 
-#Now we will create the plot. We call on the data from worldmap and its "simple feature" geom. Over that, we will overaly the data from "mapMerge" onto this plot. 
+#Now we will create the plot. We call on the data from worldmap and its "simple feature" geom. Over that, we will overaly the data from "mapMerge" onto this plot.
+
+##Creating "cut" intervals to plot
+
+mapMerge$cut=cut_number(mapMerge$indexCFA,5,
+                            ordered_result=T,
+                            dig.lab=5)
+
+mapMerge$cutSDI=cut_number(mapMerge$Sustainable.Development.Index,5,
+                        ordered_result=T,
+                        dig.lab=5)
+
 ggplot(data=worldMap) + 
   geom_sf() +
-  geom_sf(data = mapMerge, aes(fill=`Sustainable Development Index`),color=NA,show.legend = T) +
+  geom_sf(data = mapMerge, aes(fill=cut),color=NA,show.legend = T) +
+  scale_fill_brewer(palette = 'YlGnBu',
+                    name = "Intervals by 10") +
+  theme_map()
+
+ggplot(data=worldMap) + 
+  geom_sf() +
+  geom_sf(data = mapMerge, aes(fill=cutSDI),color=NA,show.legend = T) +
+  scale_fill_brewer(palette = 'YlGnBu',
+                    name = "SDI (Higher is Better)") +
   theme_map()
 
 ggplot(data=worldMap) + 
