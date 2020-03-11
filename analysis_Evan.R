@@ -78,7 +78,7 @@ m <- lm(sustainElectricity$accessElectricity ~ sustainElectricity$SDI)
 summary(m)$r.squared
 
 ggplot(sustainElectricity, aes(x = accessElectricity, y = SDI)) +
-  geom_point() +
+  geom_point(aes(color = Continent)) +
   geom_text_repel(aes(label = country), size = 2.5) +
   labs(x = "Access to Electricity (% of population)", 
        y = "Sustainable Development Index") +
@@ -95,6 +95,23 @@ ggplot(sustainElectricity1, aes(x = meanAccess, y = meanSDI)) +
   geom_point() +
   labs(x = "Access To Electricity (Mean)", y = "Sustainability Development Index Rating (Mean)")+
   theme_stata()
+
+only100sustain <- sustainElectricity %>%
+  filter(!is.na(accessElectricity)) %>%
+  filter(accessElectricity > 90) %>%
+  group_by(Continent) %>%
+  summarise(meanAccess = mean(accessElectricity), 
+            meanSDI = mean(SDI))
+  
+  
+ggplot(only100sustain, aes(x = meanAccess, y = meanSDI)) +
+  geom_text_repel(aes(label = Continent)) +
+  geom_point() +
+  labs(x = "Average Access To Electricity (% of Population)", y = "Average Sustainability Development Index Rating (Higher is Better)")+
+  ggtitle("Access to Electricity >90% by SDI") +
+  theme_stata()
+  
+  
 #Converting our new dataframe into a "sf" dataframe. "sf" stands for "simple feature", a standardized way to encode spatial vector data. 
 
 #We are replacing the "geometry" of finalData with the "geomtry" from the finalData$geometry column. 
@@ -116,14 +133,14 @@ ggplot(data=worldMap) +
   geom_sf() +
   geom_sf(data = mapMerge, aes(fill=cut),color=NA,show.legend = T) +
   scale_fill_brewer(palette = 'YlGnBu',
-                    name = "Intervals by 10") +
+                    name = "New Index (Higher is Better)") +
   theme_map()
 
 ggplot(data=worldMap) + 
   geom_sf() +
   geom_sf(data = mapMerge, aes(fill=cutSDI),color=NA,show.legend = T) +
   scale_fill_brewer(palette = 'YlGnBu',
-                    name = "SDI (Higher is Better)") +
+                    name = "SDI Index (Higher is Better)") +
   theme_map()
 
 ggplot(data=worldMap) + 
