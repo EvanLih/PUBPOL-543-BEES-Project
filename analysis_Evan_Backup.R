@@ -28,7 +28,7 @@ finalData <- finalData[complete.cases(finalData), ]
 finalData$Income..GNI.per.capita.constant.2011..PPP. %<>% as.numeric()
 
 modelNUM = '
-demox=~Sustainable.Development.Index + ResourceRent +Forest + Agriculutral + accessElectricity + Arable.Land + RenewConsumption'
+demox=~Sustainable.Development.Index + ResourceRent +Forest + Agricultural + accessElectricity + Arable.Land + RenewConsumption'
 
 fitNUM<-cfa(modelNUM, data = finalData)
 indexCFA=lavPredict(fitNUM)
