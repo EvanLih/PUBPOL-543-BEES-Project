@@ -1,19 +1,105 @@
----
-title: "R Notebook"
-output: html_notebook
----
-
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
-
 ```{r}
-plot(cars)
+require(sf)
+require(rgdal)
+require(ggplot2)
+require(readxl)
+library(dplyr)
+library(geojsonio)
+library(magrittr)
+library(ggrepel)
+library(ggpmisc)
+library(ggthemes)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+```{r}
+#Setting working directory to local folder
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+#Importaing our own Dataset
+finalData <- read_xlsx("Final Data (1).xlsx")
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```
+
+```{r}
+#Renaming the column "country" to COUNTRY in order to match the shapefile/json we are pulling in. Although it is possible to 
+finalData <- rename(finalData, COUNTRY = Country)
+```
+
+```{r}
+t.test(finalData$`Sustainable Development Index`, finalData$RenewConsumption, na.rm = TRUE)
+
+test <- subset(finalData, !is.na(finalData$`Sustainable Development Index` | !is.na(finalData$RenewConsumption)))
+
+```
+```{r}
+#Getting mapping data we uploaded. 
+mapLink="https://github.com/EvanLih/PUBPOL-543-BEES-Project/raw/master/UIA_World_Countries_Boundaries.json"
+#Getting projection which we will plot our map data on.
+```
+
+
+```{r}
+PROJmap="+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+```
+```{r}
+#PLot map data
+worldMap=topojson_read(mapLink,crs=PROJmap,stringsAsFactors = FALSE)
+```
+
+```{r}
+#Now we are merging our own data with the map data by COUNTRY. This will allow us to plot the data. "all.x = F" means that we are choosing NOT to include columns that don't match the "COUNTRY" from our original data 
+mapMerge <- merge(finalData, worldMap, by = "COUNTRY", all.x = F)
+```
+
+```{r}
+#subset
+RenewableConsumptionSet <- finalData %>% select(c("Continent", "RenewConsumption", "Sustainable Development Index", "COUNTRY"))
+
+RenewableConsumptionSet$RenewConsumption %<>% as.numeric()
+
+RenewableConsumptionSet %<>% rename(SDI = "Sustainable Development Index", country = "COUNTRY", RenewableConsumption = "RenewConsumption")
+
+RenewableConsumptionSet %<>% filter(!is.na(RenewableConsumption))
+```
+
+```{r}
+#t.test to see correlation between access Electricity and SDI
+t.test(x =RenewableConsumptionSet$RenewableConsumption, y = RenewableConsumptionSet$SDI,  paired = FALSE)
+m <- lm(RenewableConsumptionSet$RenewableConsumption ~ RenewableConsumptionSet$SDI)
+summary(m)$r.squared
+```
+
+```{r}
+ggplot(RenewableConsumptionSet, aes(x = RenewableConsumption, y = SDI)) +
+  geom_point() +
+  geom_text_repel(aes(label = country), size = 2.5) +
+  labs(title = "Renewable Energy Consumption & SDI", x = "Renewable Energy Consumption (% of total energy consumption)", 
+       y = "Sustainable Development Index") +
+  theme_stata()
+```
+```{r}
+RenewableConsumptionSet1 <- RenewableConsumptionSet %>%
+  filter(!is.na(RenewableConsumption)) %>%
+  group_by(Continent) %>%
+  summarise(meanConsumption = mean(RenewableConsumption), 
+            meanSDI = mean(SDI))
+
+```
+
+```{r}
+ggplot(RenewableConsumptionSet1, aes(x = meanConsumption, y = meanSDI)) +
+  geom_text_repel(aes(label = Continent)) +
+  geom_point() +
+  labs(title = "Mean Consumption of Renewable Energy within Continents & SDI", x = "Renewable Energy Consumption (% of total energy consumption)", y = "Sustainability Development Index Rating (Mean)")+
+  theme_stata()
+```
+```{r}
+st_geometry(mapMerge) <- mapMerge$geometry
+
+#Now we will create the plot. We call on the data from worldmap and its "simple feature" geom. Over that, we will overaly the data from "mapMerge" onto this plot. 
+ggplot(data=worldMap) + 
+  geom_sf() +
+  geom_sf(data = mapMerge, aes(fill=`Sustainable Development Index`),color=NA,show.legend = T) +
+  theme_map()
+```
 
