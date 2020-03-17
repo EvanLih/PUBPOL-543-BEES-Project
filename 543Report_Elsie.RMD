@@ -1,0 +1,79 @@
+#Bivariate Analysis: Renewable Consumption and SDI#
+
+Load Packages:
+```{r}
+require(sf)
+require(rgdal)
+require(ggplot2)
+require(readxl)
+library(dplyr)
+library(geojsonio)
+library(magrittr)
+library(ggrepel)
+library(ggpmisc)
+library(ggthemes)
+```
+
+Import Data:
+```{r}
+#Setting working directory to local folder
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+#Importaing our Dataset
+github_Link <-"https://raw.githubusercontent.com/EvanLih/PUBPOL-543-BEES-Project/master/Final_Data.csv"
+finalData <- read.csv(github_Link)
+finalData = finalData[-c(161:999),]
+```
+
+```{r}
+#Renaming the column "country" to COUNTRY  
+finalData <- rename(finalData, COUNTRY = Country)
+```
+
+Subset to only have the variables of Renewable consumption, SDI, Continent and Country for analysis：
+```{r}
+#subset
+RenewableConsumptionSet <- finalData %>% select(c("Continent", "RenewConsumption", "Sustainable.Development.Index", "COUNTRY"))
+
+RenewableConsumptionSet$RenewConsumption %<>% as.numeric()
+
+RenewableConsumptionSet %<>% rename(SDI = "Sustainable.Development.Index", country = "COUNTRY", RenewableConsumption = "RenewConsumption")
+
+RenewableConsumptionSet %<>% filter(!is.na(RenewableConsumption))
+```
+
+
+Run a T-test to see the correlation between Renewable Consumption and SDI:
+```{r}
+#t.test to see correlation between access Electricity and SDI
+t.test(x =RenewableConsumptionSet$RenewableConsumption, y = RenewableConsumptionSet$SDI,  paired = FALSE)
+m <- lm(RenewableConsumptionSet$RenewableConsumption ~ RenewableConsumptionSet$SDI)
+summary(m)$r.squared
+```
+
+Start to plot Renewable Comsumption and SDI:
+```{r}
+ggplot(RenewableConsumptionSet, aes(x = RenewableConsumption, y = SDI, 
+                                    color=Continent)
+       ) +
+  geom_point() +
+  #geom_text_repel(aes(label = country), size = 1.5) +
+  labs(title = "How Renewable Energy Consumption and SDI Related?", x = "Renewable Energy Consumption (% of total energy consumption)", 
+       y = "Sustainable Development Index", caption="Sources: Sustainable Development Project and The World Bank (2015)") +
+  theme_stata() #+theme(legend.title=element_text(size=11))
+```
+
+
+Now create graphs for each continent respectively
+```{r setup, include=TRUE, fig.width=10, fig.height=12, echo=FALSE}
+ggplot(RenewableConsumptionSet, aes(x = RenewableConsumption, y = SDI, color=Continent)) +
+  geom_point() +
+  # geom_text_repel(aes(label = Country), size = 1) +
+  labs(title = "How Renewable Energy Consumption and SDI Related?", x = "Renewable Energy Consumption (% of total energy consumption)", 
+       y = "Sustainable Development Index", caption="Sources: Sustainable Development Project and The World Bank (2015)") +
+  theme_stata() + theme(legend.title=element_text(size=11)) + theme(axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0))) + theme(plot.caption = element_text(hjust = -0.2)) + facet_grid(rows= vars(Continent)) 
+```
+Interpretation: 
+There is a very weak connection between Renewable Energy Consumption and SDI. However, countries with the highest renewable consumption percentage(above 75%) are unlikely to have low SDI scores. 50-75% renewable consumption group, only Iceland and Norway Countries with very low renewable consumption. 0-50% renewable consumption group’s SDI scores scatter on the plot, ranging from the lowest to the highest. The lower percentage of renewable energy consumption is, the more varied the SDI scores are. For example, Algeria, nearly zero consumption of renewable energy consumption, is very sustainably developed in terms of SDI score.
+
+It is interesting that Africa countries did very well in renewable usage in terms of consumption percentage. To the contrast, Europe, Asia, and North America did bad in renewable usage, while South America and Oceania’s points scatter among the scale. 
