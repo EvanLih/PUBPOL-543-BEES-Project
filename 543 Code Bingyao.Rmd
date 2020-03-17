@@ -1,0 +1,159 @@
+---
+title: "543 Group Code from Bingyao"
+author: "Bingyao"
+date: "3/15/2020"
+output: html_document
+---
+
+Loading Packages
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+install.packages("ggthemes")
+library(ggthemes)
+install.packages("magrittr")
+library(ggpubr)
+library(ggrepel)
+library(dplyr)
+```
+
+Importing data
+```{r}
+github_Link <-"https://raw.githubusercontent.com/EvanLih/PUBPOL-543-BEES-Project/master/Final_Data.csv"
+finalData <- read.csv(github_Link)
+finalData = finalData[-c(161:999),] # Cleaning
+```
+
+Plotting Electricity Access (Density Plot)
+```{r}
+finalData$accessElectricity=as.numeric((finalData$accessElectricity)) # Formatting 
+df1=data.frame(finalData$Country,finalData$accessElectricity,finalData$RenewConsumption) # Creating the data frame for Electricity Access & Renewable Consumption
+```
+```{r}
+base1= ggplot(df1,aes(x = finalData$accessElectricity))  
+base1= base1 + stat_density(geom="line",color="Red") +  labs(x = "Access to Electricity (% of population))", y = "Density",
+       caption = "Source : The World Bank (2015)",
+       title = "What is The Global Distribution of Electricity Access?")   + theme(plot.caption = element_text(hjust= -0.2))+ theme_stata()
+base1 # Density plot for access to electricity
+```
+
+Plotting Renewable Consumption (Density Plot)
+```{r}
+base2= ggplot(df1,aes(x = finalData$RenewConsumption))  
+base2= base2 + stat_density(geom="line",color="Red") +  labs(x = "Renewable Consumption (% of total energy consumption)", y = "Density",
+       caption = "Source : The World Bank (2015)",
+       title = "What is The Global Distribution of Renewable Consumption?")    + theme(plot.caption = element_text(hjust= -0.2))+ theme_stata()
+base2 #Density plot for renewable consumption
+```
+
+Plotting Land Use
+```{r} 
+ContinentLand = finalData %>% select(c("Continent", "Country","Agricultural","Arable.Land","Forest")) 
+Landdf = as.data.frame(ContinentLand) # Creating the data frame
+Landdf$`Arable.Land`=as.numeric((Landdf$`Arable.Land`)) # Formatting
+Landdf$`Arable.Land`=round(Landdf$`Arable.Land`,digit=2) 
+differenceLand=c(Landdf$Agricultural-Landdf$`Arable.Land`)
+Landdf$diff = differenceLand # Calculating the difference between Arable Land & Agricultural Land by country
+```
+```{r}
+# Calculating continental average for each variable and creating the data frame
+AgriMean = aggregate(data=Landdf, Agricultural~Continent,mean)
+AraMean = aggregate(data=Landdf, Arable.Land~Continent,mean)
+ForMean = aggregate(data=Landdf, Forest~Continent,mean)
+diffMean = aggregate(data=Landdf, diff~Continent,mean)
+LandMean = data.frame(AgriMean,AraMean,ForMean,diffMean)
+LandMean = LandMean[,-c(3,5,7)] 
+```
+```{r}
+library(reshape2)
+LMm = melt(LandMean) 
+```
+```{r}
+base3 = ggplot(LMm,aes(x = Continent,y = value)) + 
+  labs(x = "Continent", 
+       y = "Average Land Utilization Rate",
+       caption = "Source : The World Bank (2015)",
+       title = "How Do Land Sustainable Development Levels Compare by Continent?") +
+  theme(plot.caption = element_text(hjust= -0.2)) +
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge") +
+  scale_fill_brewer(labels = c("Agricultural Land", "Arable Land","Forest Land","Difference between Agricultural & Arable Land"),
+    palette="Pastel1") + 
+  theme_stata() + 
+  guides(fill = guide_legend(title = "Land Type", title.position = "top",nrow = 2))
+
+base3
+```
+
+Plotting Income
+```{r}
+ContinentIncomeGroup = finalData %>% select(c("Continent", "Country","Income.Group"))
+df2 = as.data.frame(ContinentIncomeGroup) # Creating the data frame
+df2$Income.Group = factor(df2$Income.Group,levels = c("Low income","Lower middle income","Upper middle income","High income")) # Reordering income categories
+```
+```{r}
+base4 = ggplot(df2, aes(x = Income.Group)) +
+  geom_bar(aes(y = (..count..)/sum(..count..))) +
+  labs(x = "Income Group", 
+       y = "Proportion",
+       caption = "Source : The World Bank (2015)",
+       title = "How Do Income Levels Compare by Continent?") +
+  scale_y_continuous(labels = scales::percent, name = "Proportion") +
+  theme(plot.caption = element_text(hjust= -0.2)) +
+  facet_wrap(~ Continent) + coord_flip() + theme_stata() +
+  theme(axis.text.y = element_text(size = 6, angle = 45)) 
+base4
+```
+
+Comparing SDI and Land Use by country
+```{r}
+SDIByCountry=data.frame(finalData$Country,finalData$`Sustainable.Development.Index`)
+names(SDIByCountry)=c('Country','SDIScore')
+LandByCountry=data.frame(finalData$Country,differenceLand)
+names(LandByCountry)=c('Country','LandUse')
+```
+```{r}
+num_num=merge(SDIByCountry,LandByCountry) 
+num_num$Country=as.character(num_num$Country)
+```
+```{r}
+SDILANDCountry = ggplot(num_num, aes(y = SDIScore, x = LandUse)) + 
+  labs(x = "Difference between Agricultural Land & Arable Land", 
+       y = "Sustainability Development Index",
+       caption = "Source : Sustainable Development Project and The World Bank (2015)",
+       title = "Is Land Sustainable Development Level Related to SDI?") +
+  theme(plot.caption = element_text(hjust= -0.2)) +
+  theme_stata()
+
+# highlighting overlaping of points
+SDILANDCountry = SDILANDCountry +  
+  geom_hex(bins = 10) +
+  scale_fill_distiller(palette ="Greys",direction=1) +
+   guides(fill = guide_legend(title = "Count", title.position = "top",size=1)) +
+  theme(legend.position="right")
+SDILANDCountry
+```
+Comparing SDI and Land Use by Continent (scatterplot)
+```{r}
+# Comparing average continental SDI score and land use level
+SDIByContinent=aggregate(data=finalData, `Sustainable.Development.Index`~Continent, mean)
+LandUseByContinent=aggregate(data=finalData, differenceLand~Continent, mean)
+```
+```{r}
+num_num1=merge(SDIByContinent,LandUseByContinent) 
+num_num1$Continent=as.character(num_num1$Continent)
+```
+```{r}
+SDILANDContinent = 
+  ggplot(num_num1, aes(y = `Sustainable.Development.Index`, x = differenceLand)) + 
+  geom_point() + 
+  geom_text_repel(aes(label=Continent),size=2.5) +
+  labs(x = "Difference between Agricultural Land & Arable Land", 
+       y = "Average Sustainability Development Index Rating",
+       caption = "Source : Sustainable Development Project and The World Bank (2015)",
+       title = "Is Continental Land Sustainable Development Level Related to SDI?")+
+  theme(plot.caption = element_text(hjust= -0.2))+
+  theme_stata()
+SDILANDContinent
+```
+
+
