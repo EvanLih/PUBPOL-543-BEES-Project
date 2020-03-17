@@ -1,0 +1,85 @@
+#Graphs for SDI & Resource Rent (multivariate and univariate)
+
+
+
+```{r echo=FALSE}
+# load in necessary libraries 
+library(ggplot2)
+#library(geojsonio)
+library(ggthemes)
+library(dplyr)
+library(ggrepel)
+library(scales)
+
+```
+
+
+```{r echo=FALSE}
+#load in our data
+github_Link <-"https://raw.githubusercontent.com/EvanLih/PUBPOL-543-BEES-Project/master/Final_Data.csv"
+finalData <- read.csv(github_Link)
+
+```
+
+```{r echo=FALSE}
+#select data frame
+sdiResourceRent <- finalData %>% select(c("Continent", "ResourceRent", "Sustainable.Development.Index", "Country"))
+sdiData = as.data.frame(sdiResourceRent)
+##Evan CODE - this line of code "completecases" only keeps rows where there are outputs/non-missing values for specified columns. In this case, we are specifying all columns. 
+sdiResourceRent <- sdiResourceRent[complete.cases(sdiResourceRent), ]
+```
+
+
+<h1>Univariate Analysis of Sustainable Development</h1> 
+```{r echo=FALSE}
+#SDI alone - univariate
+ContinentSdi = aggregate(sdiResourceRent[, 3], list(sdiResourceRent$Continent), mean)
+
+#ContinentSdi
+
+ggplot(ContinentSdi, aes(x=reorder(Group.1, x), y= x)) + geom_bar(position="dodge", stat="identity") + labs(x="Continent", y="Average Sustainable Development Index", title="How Do Continental SDI Scores Compare?", caption="Sources: Sustainable Development Project and The World Bank (2015)") + theme_stata() + geom_text(aes(label=round(x, digits=2)), position=position_dodge(width=0.9), vjust=1.3, size=3.5, color="white") + theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1, size=8)) + theme(axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0))) + theme(plot.caption = element_text(hjust = -0.2)) + annotate("text", x = 6, y = 0.65, label = "Best Score", color="light green") + annotate("text", x = 1, y = 0.4, label = "Worst Score", color="pink")
+
+```
+
+<p> The first piece of analysis is a univariate plot of the existing Sustainable Development Index. Because there are so many countries to look at, we average the SDI score by continent. In general, the average SDI score is relatively similar across all continents--at around 0.6--although Europe has a slightly worse score, and South America’s score is a bit better. Considering the results of this plot, it may be important to note that looking at average SDI by continent essentially covers up the worst-performing countries’ scores. For example, the US, Canada, and Australia all have SDI scores under 0.2, but because other countries in North America and Oceania have quite high SDI scores, the continental averages are not brought down. With this in mind, it could be interesting for future studies to weigh SDI scores when computing regional averages like this--for example, by population--so that regions with poor-scoring impactful countries like the US, Canada, and Australia can be more accurately represented.
+</p>
+
+
+
+<h1> Multivariate Analysis of SDI and Resource Rent</h1>
+<h2>Global Trends</h2>
+```{r echo=FALSE}
+# SDI compared to Resource Rent (multivariate)
+ggplot(sdiResourceRent, aes(x = ResourceRent, y = Sustainable.Development.Index, color=Continent)) +
+  geom_point() +
+  # geom_text_repel(aes(label = Country), size = 1) +
+  labs(x = "Resource Rent (% of GDP)", 
+       y = "Sustainable Development Index", title="How Are Resource Rent and SDI Related?", caption = "Sources: Sustainable Development Project and The World Bank (2015)") +
+  theme_stata() + theme(legend.title=element_text(size=11)) + theme(axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0))) + theme(plot.caption = element_text(hjust = -0.2))
+
+
+```
+
+<p>
+Another way to address our question of whether the SDI accurately measures sustainable development is by comparing SDI scores and resource rent. To clarify, resource rent essentially refers to how natural resources like oil, gas, forests, minerals, and coal contribute to a country's GDP. Based on this plot, there not many discernible trends regarding the relationship between SDI score and resource rent. For the most part, however, the majority of countries and continents in general tend to have low resource rent values, while SDI score varies widely. This lack of a discernible relationship may indicate that including resource rent into the calculation of sustainable development could change the way that sustainable development is measured.
+</p>
+
+
+<h2>Trends by Continent</h2>
+```{r setup, include=TRUE, fig.width=10, fig.height=12, echo=FALSE}
+# create individual graphs for each continent 
+# SDI compared to Resource Rent (multivariate)
+ggplot(sdiResourceRent, aes(x = ResourceRent, y = Sustainable.Development.Index, color=Continent)) +
+  geom_point() +
+  # geom_text_repel(aes(label = Country), size = 1) +
+  labs(x = "Resource Rent (% of GDP)", 
+       y = "Sustainable Development Index", title="How Are Resource Rent and SDI Related by Continent?", caption = "Sources: Sustainable Development Project and The World Bank (2015)") +
+  theme_stata() + theme(legend.title=element_text(size=11)) + theme(axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0))) + theme(plot.caption = element_text(hjust = -0.2)) + facet_grid(rows= vars(Continent)) 
+
+
+```
+
+<p>
+The same analysis of resource rent and SDI score can be broken down by continent. Through this analysis, several basic trends become clearer. First, Africa and Asia experience the greatest variation in both resource rent and SDI score. Second, Europe, North America, and Oceania experince little variation in resource rent, but a wide variation in SDI score. Third and finally, South America experiences quite a great variation in resource rent, but SDI score does not vary significantly (rather, SDI score in all South American countries is quite high). 
+</p>
+
