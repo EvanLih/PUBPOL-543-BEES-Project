@@ -1,3 +1,4 @@
+Load Packages:
 ```{r}
 require(sf)
 require(rgdal)
@@ -11,57 +12,36 @@ library(ggpmisc)
 library(ggthemes)
 ```
 
+Import Data:
 ```{r}
 #Setting working directory to local folder
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-#Importaing our own Dataset
-finalData <- read_xlsx("Final Data (1).xlsx")
-
+#Importaing our Dataset
+github_Link <-"https://raw.githubusercontent.com/EvanLih/PUBPOL-543-BEES-Project/master/Final_Data.csv"
+finalData <- read.csv(github_Link)
+finalData = finalData[-c(161:999),]
 ```
 
 ```{r}
-#Renaming the column "country" to COUNTRY in order to match the shapefile/json we are pulling in. Although it is possible to 
+#Renaming the column "country" to COUNTRY  
 finalData <- rename(finalData, COUNTRY = Country)
 ```
 
-```{r}
-t.test(finalData$`Sustainable Development Index`, finalData$RenewConsumption, na.rm = TRUE)
-
-test <- subset(finalData, !is.na(finalData$`Sustainable Development Index` | !is.na(finalData$RenewConsumption)))
-
-```
-```{r}
-#Getting mapping data we uploaded. 
-mapLink="https://github.com/EvanLih/PUBPOL-543-BEES-Project/raw/master/UIA_World_Countries_Boundaries.json"
-#Getting projection which we will plot our map data on.
-```
-
-
-```{r}
-PROJmap="+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-```
-```{r}
-#PLot map data
-worldMap=topojson_read(mapLink,crs=PROJmap,stringsAsFactors = FALSE)
-```
-
-```{r}
-#Now we are merging our own data with the map data by COUNTRY. This will allow us to plot the data. "all.x = F" means that we are choosing NOT to include columns that don't match the "COUNTRY" from our original data 
-mapMerge <- merge(finalData, worldMap, by = "COUNTRY", all.x = F)
-```
-
+Subset to only have the variables of Renewable consumption, SDI, Continent and Country for analysis：
 ```{r}
 #subset
-RenewableConsumptionSet <- finalData %>% select(c("Continent", "RenewConsumption", "Sustainable Development Index", "COUNTRY"))
+RenewableConsumptionSet <- finalData %>% select(c("Continent", "RenewConsumption", "Sustainable.Development.Index", "COUNTRY"))
 
 RenewableConsumptionSet$RenewConsumption %<>% as.numeric()
 
-RenewableConsumptionSet %<>% rename(SDI = "Sustainable Development Index", country = "COUNTRY", RenewableConsumption = "RenewConsumption")
+RenewableConsumptionSet %<>% rename(SDI = "Sustainable.Development.Index", country = "COUNTRY", RenewableConsumption = "RenewConsumption")
 
 RenewableConsumptionSet %<>% filter(!is.na(RenewableConsumption))
 ```
 
+
+Run a T-test to see the correlation between Renewable Consumption and SDI:
 ```{r}
 #t.test to see correlation between access Electricity and SDI
 t.test(x =RenewableConsumptionSet$RenewableConsumption, y = RenewableConsumptionSet$SDI,  paired = FALSE)
@@ -69,14 +49,24 @@ m <- lm(RenewableConsumptionSet$RenewableConsumption ~ RenewableConsumptionSet$S
 summary(m)$r.squared
 ```
 
+Start to plot Renewable Comsumption and SDI:
 ```{r}
-ggplot(RenewableConsumptionSet, aes(x = RenewableConsumption, y = SDI)) +
+ggplot(RenewableConsumptionSet, aes(x = RenewableConsumption, y = SDI, 
+                                    color=Continent)
+       ) +
   geom_point() +
-  geom_text_repel(aes(label = country), size = 2.5) +
-  labs(title = "Renewable Energy Consumption & SDI", x = "Renewable Energy Consumption (% of total energy consumption)", 
-       y = "Sustainable Development Index") +
-  theme_stata()
+  #geom_text_repel(aes(label = country), size = 1.5) +
+  labs(title = "How Renewable Energy Consumption and SDI Related?", x = "Renewable Energy Consumption (% of total energy consumption)", 
+       y = "Sustainable Development Index", caption="Sources: Sustainable Development Project and The World Bank (2015)") +
+  theme_stata() #+theme(legend.title=element_text(size=11))
 ```
+
+
+
+
+
+
+Note for Evan: Stop from here ：）
 ```{r}
 RenewableConsumptionSet1 <- RenewableConsumptionSet %>%
   filter(!is.na(RenewableConsumption)) %>%
@@ -101,5 +91,31 @@ ggplot(data=worldMap) +
   geom_sf() +
   geom_sf(data = mapMerge, aes(fill=`Sustainable Development Index`),color=NA,show.legend = T) +
   theme_map()
+```
+```{r}
+RenewableConsumptionSet$RenewableCut=cut(RenewableConsumptionSet$RenewableConsumption,
+                          breaks = c(0,25,50,75,100),
+                          labels = c("less25","25-50","50-75","75-100"))
+```
+```{r}
+absoluteT=table(RenewableConsumptionSet$RenewableCut)
+absoluteT
+```
+
+```{r}
+tableFreq=as.data.frame(absoluteT)
+tableFreq
+```
+```{r}
+names(tableFreq)=c("RenewableConsumptionPercentage","Count")
+tableFreq
+```
+```{r}
+ggplot(data = tableFreq, 
+             aes(x = RenewableConsumptionPercentage,
+                 y = Count)) + geom_bar(fill ="gray",
+                        stat = 'identity') +
+labs( title = "Renewable Consumption", x= "Renewable Energy Consumption (% of total energy consumption)" , y= "Number of Countries") +
+theme_stata()
 ```
 
