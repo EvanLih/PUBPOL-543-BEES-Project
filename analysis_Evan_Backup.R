@@ -79,16 +79,19 @@ summary(m)$r.squared
 
 ggplot(sustainElectricity, aes(x = accessElectricity, y = SDI)) +
   geom_point(aes(color = Continent)) +
-  geom_text_repel(aes(label = country), size = 2.5) +
   labs(x = "Access to Electricity (% of population)", 
-       y = "Sustainable Development Index") +
-  theme_stata()
+       y = "Sustainable Development Index (SDI)",
+       caption = "Source : Sustainable Development Project and The World Bank (2015)",
+       title = "Is Electricity Access Related to SDI?") +
+  theme_stata() +
+  facet_wrap(~Continent, ncol = 1) +
 
 sustainElectricity1 <- sustainElectricity %>%
   filter(!is.na(accessElectricity)) %>%
   group_by(Continent) %>%
   summarise(meanAccess = mean(accessElectricity), 
-            meanSDI = mean(SDI))
+            meanSDI = mean(SDI)) +
+  
 
 ggplot(sustainElectricity1, aes(x = meanAccess, y = meanSDI)) +
   geom_text_repel(aes(label = Continent)) +
@@ -107,8 +110,9 @@ only100sustain <- sustainElectricity %>%
 ggplot(only100sustain, aes(x = meanAccess, y = meanSDI)) +
   geom_text_repel(aes(label = Continent)) +
   geom_point() +
-  labs(x = "Average Access To Electricity (% of Population)", y = "Average Sustainability Development Index Rating (Higher is Better)")+
-  ggtitle("Access to Electricity >90% by SDI") +
+  labs(x = "Average Access To Electricity (% of Population)", y = "Average Sustainability Development Index Rating (Higher is Better)",
+       caption = "Source : Sustainable Development Project and The World Bank (2015)")+
+  ggtitle("How does SDI Compare Across Continents for Countries with Widespread Electricity Access?") +
   theme_stata()
   
   
@@ -132,9 +136,14 @@ mapMerge$cutSDI=cut_number(mapMerge$Sustainable.Development.Index,5,
 ggplot(data=worldMap) + 
   geom_sf() +
   geom_sf(data = mapMerge, aes(fill=cut),color=NA,show.legend = T) +
+  theme_map() +
   scale_fill_brewer(palette = 'YlGnBu',
                     name = "New Index (Higher is Better)") +
-  theme_map()
+  labs( caption = "Source: Sustainable Development Project, World Bank 2015",
+        title = "New SDI index") +
+  theme(plot.title = element_text(hjust = .5),
+        plot.caption = element_text(hjust= 0))
+
 
 ggplot(data=worldMap) + 
   geom_sf() +
@@ -145,7 +154,11 @@ ggplot(data=worldMap) +
 
 ggplot(data=worldMap) + 
   geom_sf() +
-  geom_sf(data = mapMerge, aes(fill = accessElectricity),color="red",show.legend = F)
+  geom_sf(data = mapMerge, aes(fill = accessElectricity),color="red",show.legend = F) +
+  labs( caption = "Source : The World Bank (2015)",
+       title = "Is Electricity Access Related to SDI?")
+  
+  
 
 
 
