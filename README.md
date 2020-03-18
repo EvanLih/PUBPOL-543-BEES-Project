@@ -1,4 +1,4 @@
-# Studying Sustainable Development 
+<p align="center"> # Studying Sustainable Development </p>
 
 ## Course: PUBPOL 542: Visual Analytics
 
