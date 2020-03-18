@@ -1,4 +1,4 @@
-#Studying Sustainable Development - 
+# Studying Sustainable Development - 
 ## Course: Visual Analytics
 
 # Purpose of Analysis
