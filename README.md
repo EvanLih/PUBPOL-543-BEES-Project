@@ -1,9 +1,16 @@
 # Studying Sustainable Development
+
 ## Course: PUBPOL 542: Visual Analytics
+
 ## Group Members:
 ![test](https://raw.githubusercontent.com/EvanLih/PUBPOL-543-BEES-Project/master/Team_members.png)
 # Purpose of Analysis
 Our analysis seeks to study global trends in sustainable development.
+
+In the repo you can find:
+* <a href="https://evanlih.github.io/PUBPOL-543-BEES-Project/">Final HTML/Analysis</a>
+* <a href="https://github.com/EvanLih/PUBPOL-543-BEES-Project/blob/master/Final_Data.csv">Data File</a>
+* <a href="https://github.com/EvanLih/PUBPOL-543-BEES-Project/blob/master/Final_Analysis.Rmd">Markdown File</a>
 
 **Through this analysis, we hope to explore two main questions:** 
 </p>
@@ -16,7 +23,3 @@ Our analysis seeks to study global trends in sustainable development.
     + SDI and Resource Usage
     + SDI and Resource Rent
 
-In the repo you can find:
-* <a href="https://evanlih.github.io/PUBPOL-543-BEES-Project/">Final HTML/Analysis</a>
-* <a href="https://github.com/EvanLih/PUBPOL-543-BEES-Project/blob/master/Final_Data.csv">Data File</a>
-* <a href="https://github.com/EvanLih/PUBPOL-543-BEES-Project/blob/master/Final_Analysis.Rmd">Markdown File</a>
