@@ -110,7 +110,7 @@ ggplot(ContinentSdi, aes(x=reorder(Group.1, x), y= x)) + geom_bar(position="dodg
 <p> **Main Findings:** The first piece of analysis is a univariate plot of the existing Sustainable Development Index. Because there are so many countries to look at, we average the SDI score by continent. In general, the average SDI score is relatively similar across all continents--at around 0.6--although Europe has a slightly worse score, and South America’s score is a bit better. Considering the results of this plot, it may be important to note that looking at average SDI by continent essentially covers up the worst-performing countries’ scores. For example, the US, Canada, and Australia all have SDI scores under 0.2, but because other countries in North America and Oceania have quite high SDI scores, the continental averages are not brought down. With this in mind, it could be interesting for future studies to weigh SDI scores when computing regional averages like this--for example, by population--so that regions with poor-scoring impactful countries like the US, Canada, and Australia can be more accurately represented.
 </p>
 
-<center> <h4>  Plotting Electricity Access *(Density Plot)* </h4> </center>
+<center> <h4>  Plotting Electricity Access </h4> </center>
 <center>**A summary of the global distribution of electricity access.**</center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 finalData$accessElectricity=as.numeric((finalData$accessElectricity))
@@ -139,7 +139,7 @@ base2
 <p> **Main Finding:** The highest point of curve is located at around 10%, which means a great number of countries have a low renewable consumption level.
 </p>
 <br>
-<center> <h4>  Plotting Land Use *(Grouped Bar Chart)* </h4> </center>
+<center> <h4>  Plotting Land Use </h4> </center>
 <center>**A summary of the continental average utilization rate for different land types.** </center>
 Land types contain agricultural land *(lands being used for agriculture)*, arable land *(lands suitable for agriculture)* and forest lands. By calculating the differece between agricultural and arable land, we aim to see ***how much of the land that wasn't meant for agriculture has been turned into agriculture*** and thus learning the average land development sustainability for each continent.
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
@@ -191,7 +191,7 @@ base3
 + Africa and South America are doing worse.
 </p>
 <br>
-<center> <h4>  Plotting Income *(Bar Chart)* </h4> </center>
+<center> <h4>  Plotting Income<h4> </center>
 <center>**A summary of the number of countries with different income levels in each continent.**</center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 ContinentIncomeGroup = finalData %>% select(c("Continent", "Country","Income.Group"))
@@ -276,7 +276,7 @@ ggplot(only100sustain, aes(x = meanAccess, y = meanSDI)) +
   geom_point() +
   labs(x = "Average Access To Electricity (% of Population)", y = "Average Sustainability Development Index Rating (Higher is Better)",
        caption = "Source : Sustainable Development Project and The World Bank (2015)")+
-  ggtitle("How does SDI Compare Across Continents for Countries with Widespread Electricity Access?") +
+  ggtitle("How does SDI Compare Across Continents \n for Countries with Widespread Electricity Access?") +
   theme_stata()
 ```
 <br>
@@ -345,7 +345,7 @@ It is interesting that Africa countries did very well in renewable usage in term
 <center><h3> Plotting SDI and Land Use</h3></center>
 <center>**A comparison of SDI and land development sustainability (the difference between agricultural land and arable land).**
 </center>
-<center><h4> by Country *(Hexagonal Heatmap)*</h4></center>
+<center><h4> by Country </h4></center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 SDIByCountry=data.frame(finalData$Country,finalData$`Sustainable.Development.Index`)
 names(SDIByCountry)=c('Country','SDIScore')
@@ -379,7 +379,7 @@ SDILANDCountry
 <p> **Main Findings:** :The darker color in the upper left corner indicates that a great number of countries are in that area. From this we can conclude a positive relationship between SDI and land development sustainabiity level. That is, the smaller difference between agricultural & arable land, the higher level of land development sustainability, and the higher level of SDI. 
 </p>
 
-<center><h4> by Continent *(Scatterplot)*</h4></center>
+<center><h4> by Continent </h4></center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 #Calculate continental average of data, and prepare the data frame:
 # Comparing average continental SDI score and land susatinability level
