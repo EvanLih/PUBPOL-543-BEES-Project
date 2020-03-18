@@ -9,8 +9,8 @@ In the repo you can find:
 # Purpose of Analysis
 Our analysis seeks to study global trends in sustainable development.
 **Through this analysis, we hope to explore two main questions:** 
-</p>
-1. How do countries development compare when incorporating the environment into the equation? 
+
+1. **How do countries development compare when incorporating the environment into the equation?** 
     + More specifically, how does SDI's overall measurement differ from the individual variables regarding land use, renewables, and general energy usage?
     + Does SDI accurately predict a country's renewable capability/ resource usage/ land use?
 
