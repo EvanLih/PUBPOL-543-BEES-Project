@@ -1,0 +1,42 @@
+---
+title: "The Sustainable Development Index (SDI) and Renewable"
+output: html_document
+date: 3/17/19
+author: Bingyao Zou, Elsie Liu, Evan Lih, Sabrina Santos
+---
+
+# Importing Data:
+We are importing our for analysis. Our dataset was pre-cleaned in R. 
+* This data consists of as follows: 
+  + Sustainable Development Index (SDI) and its sub-variables
+
+
+```{r}
+
+
+#Importaing our Dataset. Our dataset is Data from the Suss
+github_Link <-"https://raw.githubusercontent.com/EvanLih/PUBPOL-543-BEES-Project/master/Final_Data.csv"
+finalData <- read.csv(github_Link)
+finalData = finalData[-c(161:999),]
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
