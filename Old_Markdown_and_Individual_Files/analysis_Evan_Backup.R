@@ -45,9 +45,9 @@ plot(finalData$Sustainable.Development.Index, finalData$indexCFA)
 
 
 
-t.test(finalData$`Sustainable Development Index`, finalData$accessElectricity, na.rm = TRUE)
+t.test(finalData$`Sustainable.Development.Index`, finalData$accessElectricity, na.rm = TRUE)
 
-test <- subset(finalData, !is.na(finalData$`Sustainable Development Index` | !is.na(finalData$accessElectricity)))
+test <- subset(finalData, !is.na(finalData$`Sustainable.Development.Index` | !is.na(finalData$accessElectricity)))
 
 #Renaming the column "country" to COUNTRY in order to match the shapefile/json we are pulling in. Although it is possible to 
 finalData <- rename(finalData, COUNTRY = Country)
@@ -64,6 +64,10 @@ worldMap=topojson_read(mapLink,crs=PROJmap,stringsAsFactors = FALSE)
 #Now we are merging our own data with the map data by COUNTRY. This will allow us to plot the data. "all.x = F" means that we are choosing NOT to include columns that don't match the "COUNTRY" from our original data 
 mapMerge <- merge(finalData, worldMap, by = "COUNTRY", all.x = F)
 
+
+
+
+
 sustainElectricity <- finalData %>% select(c("Continent", "accessElectricity", "Sustainable.Development.Index", "COUNTRY"))
 
 sustainElectricity$accessElectricity %<>% as.numeric()
@@ -77,20 +81,33 @@ t.test(x =sustainElectricity$accessElectricity, y = sustainElectricity$SDI,  pai
 m <- lm(sustainElectricity$accessElectricity ~ sustainElectricity$SDI)
 summary(m)$r.squared
 
+interestCountry <- sustainElectricity %>%
+  filter(country == "United States" |
+           country == "China" |
+           country == "Nigeria" |
+           country == "Australia" |
+           country == "Singapore" |
+           country == "Peru" |
+           country == "Germany")
+
+
 ggplot(sustainElectricity, aes(x = accessElectricity, y = SDI)) +
   geom_point(aes(color = Continent)) +
   labs(x = "Access to Electricity (% of population)", 
-       y = "Sustainable Development Index (SDI)",
+       y = "Sustainable.Development.Index (SDI)",
        caption = "Source : Sustainable Development Project and The World Bank (2015)",
        title = "Is Electricity Access Related to SDI?") +
   theme_stata() +
-  facet_wrap(~Continent, ncol = 1) +
+  geom_text_repel(data = interestCountry,  aes(x = accessElectricity, y = SDI,label=country)) +
+  facet_wrap(~Continent, ncol = 1) 
+
+
 
 sustainElectricity1 <- sustainElectricity %>%
   filter(!is.na(accessElectricity)) %>%
   group_by(Continent) %>%
   summarise(meanAccess = mean(accessElectricity), 
-            meanSDI = mean(SDI)) +
+            meanSDI = mean(SDI))
   
 
 ggplot(sustainElectricity1, aes(x = meanAccess, y = meanSDI)) +
@@ -133,9 +150,30 @@ mapMerge$cutSDI=cut_number(mapMerge$Sustainable.Development.Index,5,
                         ordered_result=T,
                         dig.lab=5)
 
+#Getting average SDI Index for each continent. 
+install.packages("gridExtra")
+install.packages("maptools")
+library(rgdal)
+library(maptools)
+
+mapMerge$cutSDI %<>% as.numeric()
+
+mapMerge %<>%
+  group_by(Continent) %>%
+  mutate_at(vars(cutSDI, cut),
+            funs(as.numeric)) %>%
+  mutate(meanSDI = round(mean(cutSDI), digits= 2),
+         meanNewSDI = round(mean(cut), digits = 2)) %>%
+    mutate_at(vars(meanSDI, meanNewSDI),
+              funs(as.factor))
+
+
+mapMerge$meanSDI %<>% as.factor()
+
+
 ggplot(data=worldMap) + 
   geom_sf() +
-  geom_sf(data = mapMerge, aes(fill=cut),color=NA,show.legend = T) +
+  geom_sf(data = mapMerge, aes(fill=meanNewSDI),color=NA,show.legend = T) +
   theme_map() +
   scale_fill_brewer(palette = 'YlGnBu',
                     name = "New Index (Higher is Better)") +
@@ -147,7 +185,7 @@ ggplot(data=worldMap) +
 
 ggplot(data=worldMap) + 
   geom_sf() +
-  geom_sf(data = mapMerge, aes(fill=cutSDI),color=NA,show.legend = T) +
+  geom_sf(data = mapMerge, aes(fill=meanSDI),color=NA,show.legend = T) +
   scale_fill_brewer(palette = 'YlGnBu',
                     name = "SDI Index (Higher is Better)") +
   theme_map()
@@ -158,7 +196,7 @@ ggplot(data=worldMap) +
   labs( caption = "Source : The World Bank (2015)",
        title = "Is Electricity Access Related to SDI?")
   
-  
+geom_sf_text(aes(label=CONTINENT))
 
 
 
