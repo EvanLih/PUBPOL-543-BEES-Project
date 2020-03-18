@@ -30,7 +30,7 @@ The main focus of this analysis is to study global trends in sustainable develop
 <p>
 **Through this analysis, we hope to explore two main questions:** 
 </p>
-1. How do countries’ development compare when incorporating the environment into the equation? 
+1. **How do countries’ development compare when incorporating the environment into the equation?** 
     + More specifically, how does SDI’s overall measurement differ from the individual variables regarding land use, renewables, and general energy usage?
     + Does SDI accurately predict a country’s renewable capability/ resource usage/ land use?
 
@@ -72,7 +72,7 @@ lapply(packages, library, character.only = TRUE)
 ```
 
 #### Importing Data:
-We are importing our for analysis. Our dataset was merged and cleaned in R. From this point on, the code will be hidden for clarity. Please see <https://github.com/EvanLih/PUBPOL-543-BEES-Project/raw/master/Final_Analysis.Rmd> for the full code. 
+We are importing our data for analysis. Our dataset was merged and cleaned in R. From this point on, the code will be hidden for clarity. Please see <https://github.com/EvanLih/PUBPOL-543-BEES-Project/raw/master/Final_Analysis.Rmd> for the full code. 
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
 github_Link <-"https://raw.githubusercontent.com/EvanLih/PUBPOL-543-BEES-Project/master/Final_Data.csv"
@@ -123,7 +123,7 @@ base1= base1 + stat_density(geom="line",color="Red") +  labs(x = "Access to Elec
 base1 
 ```
 <br>
-<p> **Main Findings:**- The density plot a longer tail to the left, which means that the majority of countries have high accessibility to electricity.
+<p> **Main Findings:** The density plot a longer tail to the left, which means that the majority of countries have high accessibility to electricity.
 - There are lots of countries have 100% capacity to electricity.
 </p>
 
@@ -136,7 +136,7 @@ base2= base2 + stat_density(geom="line",color="Red") +  labs(x = "Renewable Cons
 base2 
 ```
 <br>
-<p> **Main Findings:** The highest point of curve is located at around 10%, which means a great number of countries have a low renewable consumption level.
+<p> **Main Finding:** The highest point of curve is located at around 10%, which means a great number of countries have a low renewable consumption level.
 </p>
 <br>
 <center> <h4>  Plotting Land Use *(Grouped Bar Chart)* </h4> </center>
@@ -186,9 +186,9 @@ base3
 ```
 <p> **Main Findings:** 
 
-- All continents over exploited the arable land resource.
-- Europe is doing better at sustainable land use.
-- Africa and South America are doing worse.
++ All continents over exploited the arable land resource.
++ Europe is doing better at sustainable land use.
++ Africa and South America are doing worse.
 </p>
 <br>
 <center> <h4>  Plotting Income *(Bar Chart)* </h4> </center>
@@ -212,9 +212,10 @@ base4
 ```
 <br>
 <p> **Main Findings:** 
-- Europe has a significant proportion of high-income countries.
-- Africa is dominated by low- & middle- income countries.
-- Income level of Asian countries varies a lot.
+
++ Europe has a significant proportion of high-income countries.
++ Africa is dominated by low- & middle- income countries.
++ Income level of Asian countries varies a lot.
 </p>
 
 <center><font color="red"><h2>Bivariate Analysis</h2></font></center>
@@ -401,10 +402,10 @@ SDILANDContinent
 ```
 
 <p> **Main Findings:**
-- Europe has high land development sustainability level and low SDI.
-- South America has low land development sustainability level and high SDI.
-- Africa has low land development sustainability level and relatively low SDI.
-- The continental comparison result is not consistent with the result in country level. We guess it's partially due to our limitations in data processing. For example, when comparing continental average data, it's better for us to calculate weighted mean instead of absolute mean, so that we can take into account more factors such as country size and GDP.
++ Europe has high land development sustainability level and low SDI.
++ South America has low land development sustainability level and high SDI.
++ Africa has low land development sustainability level and relatively low SDI.
++ The continental comparison result is not consistent with the result in country level. We guess it's partially due to our limitations in data processing. For example, when comparing continental average data, it's better for us to calculate weighted mean instead of absolute mean, so that we can take into account more factors such as country size and GDP.
 </p>
 
 
