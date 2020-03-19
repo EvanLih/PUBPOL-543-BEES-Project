@@ -412,9 +412,9 @@ SDILANDCountry = SDILANDCountry +
   theme(legend.position="right")
 
 ggsave("SDILANDCountry.png")
-
-
 ```
+![](https://github.com/EvanLih/PUBPOL-543-BEES-Project/raw/master/SDILANDCountry.png)
+
 <br>
 <p> **Main Findings:** The darker color in the upper left corner indicates that a great number of countries are in that area. From this we can conclude that there is a positive relationship between SDI score and land development sustainabiity level. That is, the smaller the difference between agricultural and arable land, the higher the level of land development sustainability, and the higher the SDI score. 
 </p>
