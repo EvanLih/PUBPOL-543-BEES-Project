@@ -49,7 +49,7 @@ Our data came from two primary sources: **The Sustainable Development Index**^[<
     + Mean Years of Schooling
     + Income (GNI per capita constant)
     + CO2 Emissions Per Capita
-    + Material FOotprint per capita (tonnes)
+    + Material Footprint per capita (tonnes)
   + **Land Use**
     + Agriculture (% of land area) by country
     + Forest: Forest area (% of land area) by country
