@@ -405,11 +405,14 @@ SDILANDCountry = ggplot(num_num, aes(y = SDIScore, x = LandUse)) +
   theme_stata()
 
 # highlighting overlaping of points
-SDILANDCountry +  
+SDILANDCountry = SDILANDCountry +  
   geom_hex(bins = 10) +
   scale_fill_distiller(palette ="Greys",direction=1) +
    guides(fill = guide_legend(title = "Count", title.position = "top",size=1)) +
   theme(legend.position="right")
+
+ggsave("SDILANDCountry.png")
+
 
 ```
 <br>
