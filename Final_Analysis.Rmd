@@ -41,7 +41,7 @@ The main focus of this analysis is to study global trends in sustainable develop
     
 ____
 
-Our data came from two primary sources: **The Sustainable Development Index**^[<https://www.sustainabledevelopmentindex.org/>] and **The World Bank**.^[<https://data.worldbank.org/>] Our year of analysis was 2015, as this was the most recent data available across all sources. Our data consists of the following categories as follows: 
+Our data came from two primary sources: **The Sustainable Development Index**^[<https://www.sustainabledevelopmentindex.org/>] and **The World Bank**.^[<https://data.worldbank.org/>] Our year of analysis was 2015, as this was the most recent data available across both sources. Our data consists of the following categories as follows: 
 
   + **Sustainable Development Index (SDI)**
     + Life Expectancy
@@ -123,25 +123,25 @@ base1= base1 + stat_density(geom="line",color="Red") +  labs(x = "Access to Elec
 base1 
 ```
 <br>
-<p> **Main Findings:** The density plot a longer tail to the left, which means that the majority of countries have high accessibility to electricity.
-- There are lots of countries have 100% capacity to electricity.
+<p> **Main Findings:** This density plot features a longer tail to the left, which indicates that the majority of countries have high accessibility to electricity.
+More specifically, there are many countries that have 100% access to electricity.
 </p>
 
 <center>**A summary of the global distribution of renewable energy consumption.** </center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 base2= ggplot(df1,aes(x = finalData$RenewConsumption))  
 base2= base2 + stat_density(geom="line",color="Red") +  labs(x = "Renewable Consumption (% of total energy consumption)", y = "Density",
-       caption = "Source : The World Bank (2015)",
+       caption = "Source: The World Bank (2015)",
        title = "What is The Global Distribution of Renewable Consumption?")    + theme(plot.caption = element_text(hjust= -0.2))+ theme_stata()
 base2 
 ```
 <br>
-<p> **Main Finding:** The highest point of curve is located at around 10%, which means a great number of countries have a low renewable consumption level.
+<p> **Main Finding:** The highest point of this distribution curve is located at around 10%, which means that a great number of countries have a low level of renewable consumption.
 </p>
 <br>
 <center> <h4>  Plotting Land Use </h4> </center>
 <center>**A summary of the continental average utilization rate for different land types.** </center>
-Land types contain agricultural land *(lands being used for agriculture)*, arable land *(lands suitable for agriculture)* and forest lands. By calculating the differece between agricultural and arable land, we aim to see ***how much of the land that wasn't meant for agriculture has been turned into agriculture*** and thus learning the average land development sustainability for each continent.
+Land types contain agricultural land *(lands being used for agriculture)*, arable land *(lands suitable for agriculture)*, and forest lands. By calculating the differece between agricultural and arable land, we aim to see ***how much of the land that wasn't meant for agriculture has been used for agriculture***, and thus learn the average land development sustainability for each continent.
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 #Prepare the data frame:
 ContinentLand = finalData %>% select(c("Continent", "Country","Agricultural","Arable.Land","Forest")) 
@@ -173,7 +173,7 @@ LMm = melt(LandMean)
 base3 = ggplot(LMm,aes(x = Continent,y = value)) + 
   labs(x = "Continent", 
        y = "Average Land Utilization Rate",
-       caption = "Source : The World Bank (2015)",
+       caption = "Source: The World Bank (2015)",
        title = "How Do Land Sustainable Development Levels Compare by Continent?") +
   theme(plot.caption = element_text(hjust= -0.2)) +
   geom_bar(aes(fill = variable),stat = "identity",position = "dodge") +
@@ -186,13 +186,13 @@ base3
 ```
 <p> **Main Findings:** 
 
-+ All continents over exploited the arable land resource.
-+ Europe is doing better at sustainable land use.
-+ Africa and South America are doing worse.
++ All continents over-exploit their arable land resources.
++ Europe is doing better at sustainable land use than other continents.
++ Africa and South America are doing worse than other continents.
 </p>
 <br>
 <center> <h4>  Plotting Income<h4> </center>
-<center>**A summary of the number of countries with different income levels in each continent.**</center>
+<center>**A summary of the percentage of countries with different income levels in each continent.**</center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 ContinentIncomeGroup = finalData %>% select(c("Continent", "Country","Income.Group"))
 df2 = as.data.frame(ContinentIncomeGroup) # Creating the data frame
@@ -214,8 +214,8 @@ base4
 <p> **Main Findings:** 
 
 + Europe has a significant proportion of high-income countries.
-+ Africa is dominated by low- & middle- income countries.
-+ Income level of Asian countries varies a lot.
++ Africa is dominated by low- & middle-income countries.
++ The income level of Asian countries is quite variable.
 </p>
 
 <center><font color="red"><h2>Bivariate Analysis</h2></font></center>
@@ -258,8 +258,9 @@ ggplot(sustainElectricity, aes(x = accessElectricity, y = SDI)) +
   
 ```
 <br>
-<p> **Main Findings:** :In general across all Continents, it seems that as Access to Electricity Increases, SDI also increases. However, there are a few key excepotions to this. Almost all countries in Europe have a very high Access to Electricity, but widly varying levels of SDI. 
+<p> **Main Findings:** In general across all Continents, it seems that as access to electricity increases, SDI also increases. However, there are a few key excepotions to this. Almost all countries in Europe have a very high access to electricity, but widely varying levels of SDI scores. 
 </p>
+<br>
 
 <center><h4> Plotting Electricity Access and SDI: Only Countries with 90-100% Access to Elecitricity</h4></center>
 ```{r, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
@@ -280,8 +281,9 @@ ggplot(only100sustain, aes(x = meanAccess, y = meanSDI)) +
   theme_stata()
 ```
 <br>
-<p> **Main Findings:** After looking at countries who have access to electricity from 90 to 100%, its clear how the different Continents rank. To name a few key points, South America has a high access to electricity while having a high SDI, while Europe has a high access to electricity while have a relatively low SDI. 
-Subset to only have the variables of Renewable consumption, SDI, Continent and Country for analysis：
+<p> **Main Findings:** After looking at countries that have access to electricity from 90 to 100%, it is more clear how the different continents rank. To name a few key points, South America has a high access to electricity while having a high average SDI score, while Europe has a high access to electricity and a relatively low average SDI score. 
+</p>
+<br>
 <center><h4> SDI and Resource Rent</h4></center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 #Selecting our data frame
@@ -329,8 +331,9 @@ ggplot(sdiResourceRent, aes(x = ResourceRent, y = Sustainable.Development.Index,
 
 ```
 <br>
-<p>**Main Findings:**The same analysis of resource rent and SDI score can be broken down by continent. Through this analysis, several basic trends become clearer. First, Africa and Asia experience the greatest variation in both resource rent and SDI score. Second, Europe, North America, and Oceania experince little variation in resource rent, but a wide variation in SDI score. Third and finally, South America experiences quite a great variation in resource rent, but SDI score does not vary significantly (rather, SDI score in all South American countries is quite high). 
+<p>**Main Findings:** The same analysis of resource rent and SDI score can be broken down by continent. Through this analysis, several basic trends become clearer. First, Africa and Asia experience the greatest variation in both resource rent and SDI score. Second, Europe, North America, and Oceania experince little variation in resource rent, but a wide variation in SDI score. Third and finally, South America experiences quite a great variation in resource rent, but SDI score does not vary significantly (rather, SDI score in all South American countries is quite high). 
 </p>
+<br>
 
 
 <center><h4> SDI and Renewable Energy Consumption</h4></center>
@@ -371,15 +374,15 @@ ggplot(RenewableConsumptionSet, aes(x = RenewableConsumption, y = SDI,
 
 ```
 <br>
-<p> **Main Findings:** :There is a very weak connection between Renewable Energy Consumption and SDI. However, countries with the highest renewable consumption percentage(above 75%) are unlikely to have low SDI scores. 50-75% renewable consumption group, only Iceland and Norway Countries with very low renewable consumption. 0-50% renewable consumption group’s SDI scores scatter on the plot, ranging from the lowest to the highest. The lower percentage of renewable energy consumption is, the more varied the SDI scores are. For example, Algeria, nearly zero consumption of renewable energy consumption, is very sustainably developed in terms of SDI score.
+<p> **Main Findings:** There is a very weak connection between renewable energy consumption and SDI score. However, countries with the highest renewable consumption percentage (above 75%) are unlikely to have low SDI scores. In the 50-75% renewable consumption group, only Iceland and Norway have very low renewable consumption. The 0-50% renewable consumption group’s SDI scores scatter on the plot, ranging from the lowest to the highest. The lower the percentage of renewable energy consumption is, the more varied the SDI scores are. For example, Algeria, with nearly zero consumption of renewable energy, is very sustainably developed in terms of its SDI score.
 
-It is interesting that Africa countries did very well in renewable usage in terms of consumption percentage. To the contrast, Europe, Asia, and North America did bad in renewable usage, while South America and Oceania’s points scatter among the scale. . 
+Furthermore, it is interesting that African countries did very well in renewable usage in terms of consumption percentage. In contrast, Europe, Asia, and North America perform poorly in renewable usage, while South America and Oceania’s points scatter along the scale. 
 </p>
 
 <center><h3> Plotting SDI and Land Use</h3></center>
 <center>**A comparison of SDI and land development sustainability (the difference between agricultural land and arable land).**
 </center>
-<center><h4> by Country </h4></center>
+<center><h4> By Country </h4></center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 SDIByCountry=data.frame(finalData$Country,finalData$`Sustainable.Development.Index`)
 names(SDIByCountry)=c('Country','SDIScore')
@@ -395,8 +398,8 @@ num_num$Country=as.character(num_num$Country)
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 SDILANDCountry = ggplot(num_num, aes(y = SDIScore, x = LandUse)) + 
   labs(x = "Difference between Agricultural Land & Arable Land", 
-       y = "Sustainability Development Index",
-       caption = "Source : Sustainable Development Project and The World Bank (2015)",
+       y = "Sustainability Development Index (SDI)",
+       caption = "Source: Sustainable Development Project and The World Bank (2015)",
        title = "Is Land Sustainable Development Level Related to SDI?") +
   theme(plot.caption = element_text(hjust= -0.2)) +
   theme_stata()
@@ -410,10 +413,11 @@ SDILANDCountry = SDILANDCountry +
 SDILANDCountry
 ```
 <br>
-<p> **Main Findings:** :The darker color in the upper left corner indicates that a great number of countries are in that area. From this we can conclude a positive relationship between SDI and land development sustainabiity level. That is, the smaller difference between agricultural & arable land, the higher level of land development sustainability, and the higher level of SDI. 
+<p> **Main Findings:** The darker color in the upper left corner indicates that a great number of countries are in that area. From this we can conclude that there is a positive relationship between SDI score and land development sustainabiity level. That is, the smaller the difference between agricultural and arable land, the higher the level of land development sustainability, and the higher the SDI score. 
 </p>
+<br>
 
-<center><h4> by Continent </h4></center>
+<center><h4> By Continent </h4></center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 #Calculate continental average of data, and prepare the data frame:
 # Comparing average continental SDI score and land susatinability level
@@ -428,7 +432,7 @@ SDILANDContinent =
   geom_text_repel(aes(label=Continent),size=2.5) +
   labs(x = "Difference between Agricultural Land & Arable Land", 
        y = "Average Sustainability Development Index Rating",
-       caption = "Source : Sustainable Development Project and The World Bank (2015)",
+       caption = "Source: Sustainable Development Project and The World Bank (2015)",
        title = "Is Continental Land Sustainable Development Level Related to SDI?")+
   theme(plot.caption = element_text(hjust= -0.2))+
   theme_stata()
@@ -436,10 +440,11 @@ SDILANDContinent
 ```
 
 <p> **Main Findings:**
-+ Europe has high land development sustainability level and low SDI.
-+ South America has low land development sustainability level and high SDI.
-+ Africa has low land development sustainability level and relatively low SDI.
-+ The continental comparison result is not consistent with the result in country level. We guess it's partially due to our limitations in data processing. For example, when comparing continental average data, it's better for us to calculate weighted mean instead of absolute mean, so that we can take into account more factors such as country size and GDP.
+
++ Europe has a high level of land development sustainability and a low average SDI score.
++ South America has low land development sustainability level and a high average SDI score.
++ Africa has low land development sustainability level and a relatively low average SDI score.
++ The continental comparison result is not consistent with the result in country level. We estimate that this is partially due to our limitations in data processing. For example, when comparing continental average data, it would theoretically be better for us to calculate weighted mean instead of absolute mean, so that we can take into account more factors such as country size and GDP.
 </p>
 
 
@@ -509,7 +514,7 @@ mapMerge %<>%
 
 mapMerge$meanSDI %<>% as.factor()
 ```
-<center><h3> Original SDI Index</h3></center>
+<center><h3> Original Sustainable Development Index</h3></center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
  ggplot(data=worldMap) + 
   geom_sf() +
@@ -530,10 +535,10 @@ mapMerge$meanSDI %<>% as.factor()
 
 
 ```
-<p> **Main Findings:** Note: Areas on the map with Grey indicate lack of data.
-This shows the existing SDI scoring system (higher is better). We chose to unify SDI scores by continent, as to make it clearer to differentiate. The Americas seem to score highly (particularly South America). while large parts of Asia (Russia and China) scoor not so well. 
+<p> **Main Findings:** Note: Areas on the map with Grey indicate a lack of data.
+This map shows the existing SDI scoring system (higher is better). We chose to unify SDI scores by continent, as to make it clearer to differentiate. The Americas seem to score highly (particularly South America), while large parts of Asia (Russia and China) do not score as well. 
 </p>
-<center><h3> New SDI SDI Index</h3></center>
+<center><h3> Our New Sustainable Development Index</h3></center>
 ```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 
 ggplot(data=worldMap) + 
@@ -555,21 +560,24 @@ ggplot(data=worldMap) +
 
 
 ```
-<p> **Main Findings:** Note: Areas on the map with Grey indicate lack of data.
-Our new index includes these key variables: 
-- Resource REnt 
-- Forest: Forest area (% of land area) by country
-- Agriculture (% of land area) by country
-- Access To Electricity (% of population)
-- Arable: Arable land (% of land area) by country
-- Renewable Consumption (% of total energy consumption) 
+<p> **Main Findings:** Note: Areas on the map with Grey indicate a lack of data.
+Our new index includes these key variables in addition to those of the original index: 
 
-We chose these key variables, as we believe that these variables are the best indicators for our new index. Things have changed up quite a bit - For example, poor-performing countries under the original index--like Russia and China--are rated much better with our new index. Also, many countries in South America and Oceania that were highly-scoring have a worse performance with our new index.
++ Resource rent 
++ Forest area (% of land area) by country
++ Agriculture (% of land area) by country
++ Access to electricity (% of population)
++ Arable land (% of land area) by country
++ Renewable consumption (% of total energy consumption) 
+
+We chose these key variables, as we believe that these variables are the best indicators for our new index. Using our new index, the scoring of sustainable development has changed quite a bit. For example, poor-performing countries under the original index--like Russia and China--are rated much better with our new index. Also, many countries in South America and Oceania that were highly-scoring have a worse performance with our new index.
 
 </p>
 
 
 ____
 <center> <h2>Conclusion</h2> </center>
+<p>
 In brief, adding in the six other variables changes how sustainable development is measured quite a bit.
-From the above discussion, we can come to the conclusion that the existing SDI scoring system doesn't completely account for many measures of sustainability and human development. Our new index, therefore, might be a better indication of how countries around the world are really performing in terms of sustainable development. For future analysis, it would be interesting to conduct a weighted index per continent, where countries with larger population or size play a larger role in determining the "score" of the continent.   
+From the above discussion, we can come to the conclusion that the existing SDI scoring system doesn't completely account for many measures of sustainability and human development. Our new index, therefore, might be a better indication of how countries around the world are really performing in terms of sustainable development. For future analysis, it would be interesting to conduct a weighted index per continent, where countries with larger population or economic impact play a larger role in determining the "score" of the continent.   
+</p>
